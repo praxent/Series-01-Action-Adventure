@@ -4,12 +4,17 @@ using System.Collections;
 public class CharacterBaseControl : MonoBehaviour
 {
     protected Character m_Character;
-    AudioSource SwordAttack;
+    public AudioSource[] CharSounds;
+    public AudioSource SwordSound;
+    public AudioSource HurtSound;
 
     void Awake()
     {
         m_Character = GetComponent<Character>();
-        SwordAttack = GetComponent(typeof(AudioSource)) as AudioSource;
+        CharSounds = GetComponents<AudioSource>();
+
+        SwordSound = (CharSounds.Length > 0) ? CharSounds[0] : GetComponent(typeof(AudioSource)) as AudioSource;
+        HurtSound = (CharSounds.Length > 1) ? CharSounds[1] : GetComponent(typeof(AudioSource)) as AudioSource;
     }
 
     protected Vector2 GetDiagonalizedDirection( Vector2 direction, float threshold )
@@ -67,7 +72,10 @@ public class CharacterBaseControl : MonoBehaviour
             return;
         }
 
-        SwordAttack.Play();
+        if (SwordSound) {
+            SwordSound.Play();
+        }
+
         m_Character.Movement.DoAttack();
         m_Character.MovementView.DoAttack();
     }
