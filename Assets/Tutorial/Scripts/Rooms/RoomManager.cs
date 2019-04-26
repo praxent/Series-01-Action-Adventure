@@ -115,7 +115,8 @@ public class RoomManager : MonoBehaviour
     string GetRandomRegularRoomName()
     {
         string[] possibleRooms = new string[] { 
-            "Empty", 
+            "Empty",
+            "EnemyTerritory",
             "Regular00", 
             "Regular01", 
             "Regular02", 
