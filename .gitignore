@@ -53,4 +53,10 @@ sysinfo.txt
 *.unitypackage
 
 # Crashlytics generated file
-crashlytics-build.properties
+crashlytics-build.properties*.DS_Store
+Assets/.DS_Store
+Assets/Misc/.DS_Store
+Assets/Tutorial/.DS_Store
+Assets/*.DS_Store
+*.DS_Store
+Assets/Tutorial/Audio/.DS_Store
