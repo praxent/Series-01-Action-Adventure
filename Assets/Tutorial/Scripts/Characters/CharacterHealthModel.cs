@@ -75,6 +75,11 @@ public class CharacterHealthModel : MonoBehaviour
         {
             return;
         }
+        Debug.Log("MOOSE");
+        var CharBaseCtrl = GetComponent<CharacterBaseControl>();
+        if (CharBaseCtrl.HurtSound) {
+            CharBaseCtrl.HurtSound.Play();
+        }
 
         UIDamageNumbers.Instance.ShowDamageNumber( damage, transform.position );
 
