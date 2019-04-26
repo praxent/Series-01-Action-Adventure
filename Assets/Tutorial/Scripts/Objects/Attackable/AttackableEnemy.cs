@@ -11,12 +11,17 @@ public class AttackableEnemy : AttackableBase
     public float HitPushDuration;
     public GameObject DeathFX;
     public float DelayDeathFX;
+    CharacterBatControl m_Control;
 
     float m_Health;
+
+    AudioSource deathSound;
 
     void Awake()
     {
         m_Health = MaxHealth;
+        deathSound = GetComponent(typeof(AudioSource)) as AudioSource;
+        m_Control = GetComponentInParent<CharacterBatControl>();
     }
 
     public float GetHealth()
@@ -26,10 +31,20 @@ public class AttackableEnemy : AttackableBase
 
     public override void OnHit( Collider2D hitCollider, ItemType item )
     {
+        if (m_Control.IsDead) return;
+
         float damage = 10;
 
         m_Health -= damage;
-        UIDamageNumbers.Instance.ShowDamageNumber( damage, transform.position );
+        var position = transform.position;
+        if (UIDamageNumbers.Instance == null)
+        {
+            Debug.Log("No Instance!");
+        }
+        else
+        {
+            UIDamageNumbers.Instance.ShowDamageNumber(damage, position);
+        }
 
         if( MovementModel != null )
         {
@@ -56,6 +71,9 @@ public class AttackableEnemy : AttackableBase
 
         BroadcastMessage( "OnLootDrop", SendMessageOptions.DontRequireReceiver );
 
+        // DestroyObjectOnDeath.isDead = true;
+        // DestroyObjectOnDeath.hide();
+        yield return new WaitForSeconds(deathSound.clip.length);
         Destroy( DestroyObjectOnDeath );
     }
 
@@ -64,5 +82,22 @@ public class AttackableEnemy : AttackableBase
         yield return new WaitForSeconds( delay );
 
         Instantiate( DeathFX, transform.position, Quaternion.identity );
+
+        m_Control.IsDead = true;
+        var c_all = m_Control.gameObject.GetComponentsInChildren<Collider2D>();
+        foreach (var c in c_all) {
+            DestroyImmediate(c);
+            Debug.Log("DESTROYING");
+        }
+
+        if (deathSound)
+        {
+            deathSound.Play();
+
+        }
+        else
+        {
+            Debug.Log("No sound Available!");
+        }
     }
 }

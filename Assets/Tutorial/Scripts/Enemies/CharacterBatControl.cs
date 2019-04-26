@@ -7,8 +7,10 @@ public class CharacterBatControl : CharacterBaseControl
     public float PushTime;
     public AttackableEnemy AttackableEnemy;
     public float AttackDamage;
+    public bool IsDead = false;
 
     GameObject m_CharacterInRange;
+
 
     void Update()
     {
@@ -40,6 +42,8 @@ public class CharacterBatControl : CharacterBaseControl
 
     public void OnHitCharacter( Character character )
     {
+        if (IsDead) return;
+
         Vector2 direction = character.transform.position - transform.position;
         direction.Normalize();
 
