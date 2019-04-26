@@ -9,8 +9,8 @@ public class RoomData
     public int X;
     public int Y;
 }
-    
-public class RoomManager : MonoBehaviour 
+
+public class RoomManager : MonoBehaviour
 {
     public static RoomManager Instance;
 
@@ -29,8 +29,8 @@ public class RoomManager : MonoBehaviour
 
     void Start()
     {
-        LoadRoom( "Start", 0, 0 );
-        LoadRoom( "End", 1, -2 );
+        LoadRoom("Start", 0, 0);
+        LoadRoom("End", 1, -2);
     }
 
     void Update()
@@ -40,12 +40,12 @@ public class RoomManager : MonoBehaviour
 
     void UpdateRoomQueue()
     {
-        if( m_IsLoadingRoom == true )
+        if (m_IsLoadingRoom == true)
         {
             return;
         }
 
-        if( m_LoadRoomQueue.Count == 0 )
+        if (m_LoadRoomQueue.Count == 0)
         {
             return;
         }
@@ -53,14 +53,14 @@ public class RoomManager : MonoBehaviour
         m_CurrentLoadRoomData = m_LoadRoomQueue.Dequeue();
         m_IsLoadingRoom = true;
 
-        //Debug.Log( "Loading new room: " + m_CurrentLoadRoomData.Name + " at " + m_CurrentLoadRoomData.X + ", " + m_CurrentLoadRoomData.Y );
+        Debug.Log("Loading new room: " + m_CurrentLoadRoomData.Name + " at " + m_CurrentLoadRoomData.X + ", " + m_CurrentLoadRoomData.Y);
 
-        StartCoroutine( LoadRoomRoutine( m_CurrentLoadRoomData ) );
+        StartCoroutine(LoadRoomRoutine(m_CurrentLoadRoomData));
     }
 
-    void LoadRoom( string name, int x, int y )
+    void LoadRoom(string name, int x, int y)
     {
-        if( DoesRoomExist( x, y ) == true )
+        if (DoesRoomExist(x, y) == true)
         {
             return;
         }
@@ -70,27 +70,27 @@ public class RoomManager : MonoBehaviour
         newRoomData.X = x;
         newRoomData.Y = y;
 
-        m_LoadRoomQueue.Enqueue( newRoomData );
+        m_LoadRoomQueue.Enqueue(newRoomData);
     }
 
-    IEnumerator LoadRoomRoutine( RoomData data )
+    IEnumerator LoadRoomRoutine(RoomData data)
     {
         string levelName = m_CurrentWorldName + data.Name;
 
-        AsyncOperation loadLevel = SceneManager.LoadSceneAsync( levelName, LoadSceneMode.Additive );
+        AsyncOperation loadLevel = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
 
-        while( loadLevel.isDone == false )
+        while (loadLevel.isDone == false)
         {
-            //Debug.Log( "Loading " + levelName + ": " + Mathf.Round( loadLevel.progress * 100 ) + "%" );
+            Debug.Log("Loading " + levelName + ": " + Mathf.Round(loadLevel.progress * 100) + "%");
             yield return null;
-        }   
+        }
     }
 
-    public void RegisterRoom( RoomParent roomParent )
+    public void RegisterRoom(RoomParent roomParent)
     {
-        roomParent.transform.position = new Vector3( 
+        roomParent.transform.position = new Vector3(
             m_CurrentLoadRoomData.X * roomParent.Width,
-            m_CurrentLoadRoomData.Y * roomParent.Height, 0 );
+            m_CurrentLoadRoomData.Y * roomParent.Height, 0);
 
         roomParent.X = m_CurrentLoadRoomData.X;
         roomParent.Y = m_CurrentLoadRoomData.Y;
@@ -99,42 +99,44 @@ public class RoomManager : MonoBehaviour
 
         m_IsLoadingRoom = false;
 
-        if( m_LoadedRooms.Count == 0 )
+        if (m_LoadedRooms.Count == 0)
         {
             GameCamera.Instance.CurrentRoom = roomParent;
         }
 
-        m_LoadedRooms.Add( roomParent );
+        m_LoadedRooms.Add(roomParent);
     }
 
-    bool DoesRoomExist( int x, int y )
+    bool DoesRoomExist(int x, int y)
     {
-        return m_LoadedRooms.Find( item => item.X == x && item.Y == y ) != null;
+        return m_LoadedRooms.Find(item => item.X == x && item.Y == y) != null;
     }
 
     string GetRandomRegularRoomName()
     {
-        string[] possibleRooms = new string[] { 
-            "Empty",
-            "EnemyTerritory",
-            "Regular00", 
-            "Regular01", 
-            "Regular02", 
-            "Regular03", 
-            "Regular04",
-            "Puzzle01", 
-        };
 
-        return possibleRooms[ Random.Range( 0, possibleRooms.Length ) ];
+        string[] possibleRooms = new string[] {
+            "Empty",
+            "Regular00",
+            "Regular01",
+            "Regular02",
+            "Regular03",
+            "Regular04",
+            "Puzzle01",
+            "EnemyTerritory"
+        };
+        int randomRoomID = Random.Range(0, possibleRooms.Length);
+        Debug.Log("Loading randomRoomID" + randomRoomID);
+        return possibleRooms[randomRoomID];
     }
 
-    public void OnPlayerEnterRoom( RoomParent roomParent )
+    public void OnPlayerEnterRoom(RoomParent roomParent)
     {
         GameCamera.Instance.CurrentRoom = roomParent;
 
-        LoadRoom( GetRandomRegularRoomName(), roomParent.X + 1, roomParent.Y );
-        LoadRoom( GetRandomRegularRoomName(), roomParent.X - 1, roomParent.Y );
-        LoadRoom( GetRandomRegularRoomName(), roomParent.X, roomParent.Y + 1 );
-        LoadRoom( GetRandomRegularRoomName(), roomParent.X, roomParent.Y - 1 );
+        LoadRoom(GetRandomRegularRoomName(), roomParent.X + 1, roomParent.Y);
+        LoadRoom(GetRandomRegularRoomName(), roomParent.X - 1, roomParent.Y);
+        LoadRoom(GetRandomRegularRoomName(), roomParent.X, roomParent.Y + 1);
+        LoadRoom(GetRandomRegularRoomName(), roomParent.X, roomParent.Y - 1);
     }
 }
