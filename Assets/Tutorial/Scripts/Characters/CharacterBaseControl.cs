@@ -4,10 +4,12 @@ using System.Collections;
 public class CharacterBaseControl : MonoBehaviour
 {
     protected Character m_Character;
+    AudioSource SwordAttack;
 
     void Awake()
     {
         m_Character = GetComponent<Character>();
+        SwordAttack = GetComponent(typeof(AudioSource)) as AudioSource;
     }
 
     protected Vector2 GetDiagonalizedDirection( Vector2 direction, float threshold )
@@ -65,6 +67,7 @@ public class CharacterBaseControl : MonoBehaviour
             return;
         }
 
+        SwordAttack.Play();
         m_Character.Movement.DoAttack();
         m_Character.MovementView.DoAttack();
     }
