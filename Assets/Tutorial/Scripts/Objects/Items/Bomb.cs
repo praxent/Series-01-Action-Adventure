@@ -6,8 +6,16 @@ public class Bomb : MonoBehaviour
     public float TimeUntilExplosion;
     public float ExplosionRadius;
     public GameObject ExplosionPrefab;
+    private bool hasExploded = false;
+
+    AudioSource bombSound;
 
     float m_CreationTime;
+
+    void Awake()
+    {
+        bombSound = GetComponent(typeof(AudioSource)) as AudioSource;
+    }
 
     void Start() 
     {
@@ -18,9 +26,8 @@ public class Bomb : MonoBehaviour
     {
         float elapsedTime = Time.time - m_CreationTime;
 
-        if( elapsedTime >= TimeUntilExplosion )
+        if( elapsedTime >= TimeUntilExplosion && !hasExploded )
         {
-            DestroyDestructablesInRadius();
             OnExplode();
         }
     }
@@ -40,10 +47,14 @@ public class Bomb : MonoBehaviour
         }
     }
 
+
     void OnExplode()
     {
-        Destroy( gameObject );
-        Instantiate( ExplosionPrefab, transform.position, Quaternion.identity );
+        hasExploded = true;
+        StartCoroutine(DestroyRoutine());
+        StartCoroutine(CreateExplosionFXRoutine());
+
+
     }
 
     private void OnDrawGizmos()
@@ -51,4 +62,34 @@ public class Bomb : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere( transform.position, ExplosionRadius );
     }
+
+    IEnumerator DestroyRoutine()
+    {
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
+    }
+
+    IEnumerator CreateExplosionFXRoutine()
+    {
+        yield return new WaitForSeconds(.1f);
+        if (bombSound)
+        {
+            bombSound.Play();
+        }
+        else
+        {
+            Debug.Log("No sound Available!");
+        }
+        yield return new WaitForSeconds(1.4f);
+        Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
+        DestroyDestructablesInRadius();
+        //var c_all = m_Control.gameObject.GetComponentsInChildren<Collider2D>();
+        //foreach (var c in c_all)
+        //{
+        //    DestroyImmediate(c);
+        //}
+
+
+    }
+
 }

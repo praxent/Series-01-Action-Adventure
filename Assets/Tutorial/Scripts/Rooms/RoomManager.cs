@@ -123,7 +123,7 @@ public class RoomManager : MonoBehaviour
             "Regular03",
             "Regular04",
             "Puzzle01",
-            "EnemyTerritory"
+            //"EnemyTerritory"
         };
         int randomRoomID = Random.Range(0, possibleRooms.Length);
         Debug.Log("Loading randomRoomID" + randomRoomID);
